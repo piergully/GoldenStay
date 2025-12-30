@@ -1,13 +1,14 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http'; // 1. Importa HTTP
+import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs/operators';
 
-// Interfaccia User (deve combaciare con quella Java)
 export interface User {
-  id?: number; // Opzionale perché in creazione non c'è ancora
+  id?: number;
   name?: string;
   email: string;
-  password?: string; // Lo mandiamo solo al server
+  password?: string;
+  role?: string;
 }
 
 @Injectable({
@@ -15,49 +16,43 @@ export interface User {
 })
 export class AuthService {
   private router = inject(Router);
-  private http = inject(HttpClient); // 2. Inietta HTTP
-
-  private apiUrl = 'http://localhost:8080/api/users'; // URL Backend
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8080/api/users';
 
   currentUser = signal<User | null>(null);
+
+  // Questa variabile serve per non far rompere room-detail
   redirectUrl: string | null = null;
 
   constructor() {}
 
-  // --- REGISTRAZIONE VERA ---
+  // --- 1. LOGIN (Restituisce Observable) ---
+  // Questo serve al Login.ts per decidere se andare in Dashboard o Home
+  login(email: string, pass: string) {
+    const loginData = { email, password: pass };
+
+    return this.http.post<User>(`${this.apiUrl}/login`, loginData).pipe(
+      tap((userFound) => {
+        console.log("Service: Login effettuato", userFound);
+        this.currentUser.set(userFound);
+      })
+    );
+  }
+
+  // --- 2. REGISTRAZIONE (Gestisce la subscribe internamente) ---
+  // Questo lo rimettiamo come prima così la pagina di registrazione torna a funzionare!
   register(name: string, email: string, pass: string) {
     const newUser: User = { name, email, password: pass };
 
-    // Chiamata POST al Backend
     this.http.post<User>(`${this.apiUrl}/register`, newUser).subscribe({
       next: (savedUser) => {
         alert('Registrazione completata! Benvenuto ' + savedUser.name);
         this.currentUser.set(savedUser);
-        this.handleRedirect();
+        this.router.navigate(['/home']); // O dove vuoi mandarlo
       },
       error: (err) => {
         console.error(err);
-        alert('Errore: ' + (err.error || 'Registrazione fallita'));
-      }
-    });
-  }
-
-  // --- LOGIN VERO ---
-  // Nota: Ora non ritorna boolean immediato (perché è asincrono),
-  // quindi gestiamo tutto qui dentro o useremmo Observable.
-  // Per semplicità manteniamo la logica void e usiamo alert.
-  login(email: string, pass: string) {
-    const loginData = { email, password: pass };
-
-    this.http.post<User>(`${this.apiUrl}/login`, loginData).subscribe({
-      next: (userFound) => {
-        // Successo!
-        this.currentUser.set(userFound);
-        this.handleRedirect();
-      },
-      error: (err) => {
-        // Errore
-        alert('Login fallito! Controlla email e password.');
+        alert('Errore durante la registrazione: ' + (err.error || 'Riprova.'));
       }
     });
   }
@@ -69,14 +64,5 @@ export class AuthService {
 
   get isLoggedIn() {
     return !!this.currentUser();
-  }
-
-  private handleRedirect() {
-    if (this.redirectUrl) {
-      this.router.navigate([this.redirectUrl]);
-      this.redirectUrl = null;
-    } else {
-      this.router.navigate(['/']);
-    }
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Room } from '../models/room.model';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class RoomService {
   private apiUrl = 'http://localhost:8080/api/rooms';
 
   // Array reattivo che si riempirà con i dati del DB
-  private rooms = signal<Room[]>([]);
+  rooms = signal<Room[]>([]);
 
   searchCriteria = signal({
     guests: 1,
@@ -51,5 +52,11 @@ export class RoomService {
 
   getRoomById(id: number): Room | undefined {
     return this.rooms().find(r => r.id === id);
+  }
+  createRoomByFactory(type: string) {
+    return this.http.post<Room>(`${this.apiUrl}/create/${type}`, {}).pipe(
+      // IL TRUCCO È QUI: Dopo aver creato, ricarichiamo la lista!
+      tap(() => this.loadRooms())
+    );
   }
 }

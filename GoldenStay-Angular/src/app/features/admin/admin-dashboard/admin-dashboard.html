@@ -1,0 +1,64 @@
+<div class="admin-container">
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Golden<span class="text-gold">Stay</span></h2>
+      <p class="admin-label">Pannello Admin</p>
+    </div>
+
+    <nav class="sidebar-menu">
+      <a class="menu-item active"><i class="icon">🏠</i> Gestione Stanze</a>
+      <a class="menu-item"><i class="icon">📅</i> Prenotazioni</a>
+      <a class="menu-item"><i class="icon">👥</i> Utenti</a>
+      <div class="spacer"></div>
+      <a class="menu-item logout"><i class="icon">🚪</i> Logout</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+    <header class="page-header">
+      <div class="header-text">
+        <h1>Gestione Stanze</h1>
+        <p class="subtitle">Visualizza e gestisci l'inventario del tuo Hotel.</p>
+      </div>
+      <button class="btn-add" routerLink="/create-room">
+        + Aggiungi Nuova Stanza
+      </button>
+    </header>
+
+    <div class="rooms-grid">
+
+      @for (room of roomService.rooms(); track room.id) {
+
+        <div class="room-card">
+          <div class="card-image">
+            <img [src]="room.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'" [alt]="room.title">
+            <span class="status-badge active">Attiva</span>
+          </div>
+
+          <div class="card-body">
+            <h3>{{ room.title }}</h3>
+            <p class="room-details">Ospiti: {{ room.capacity }} • {{ room.description }}</p>
+
+            <div class="price">
+              {{ room.pricePerNight | currency:'EUR' }}
+              <span class="night">/ notte</span>
+            </div>
+
+            <div class="actions">
+              <button class="btn-edit">✏️ Modifica</button>
+              <button class="btn-delete" (click)="eliminaStanza(room.id!)">🗑️ Elimina</button>
+            </div>
+          </div>
+        </div>
+
+      } @empty {
+        <div class="no-rooms">
+          <p>Nessuna stanza trovata. Inizia a produrle!</p>
+        </div>
+      }
+
+    </div>
+  </main>
+</div>

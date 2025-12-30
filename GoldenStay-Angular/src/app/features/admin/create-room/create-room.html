@@ -1,0 +1,49 @@
+<div class="factory-container">
+
+  <button class="btn-back" (click)="tornaIndietro()">
+    ⬅ Torna alla Dashboard
+  </button>
+
+  <div class="header-section">
+    <h1>🏭 Fabbrica Stanze</h1>
+    <p>Seleziona il modello da produrre con il <strong>Factory Method</strong></p>
+  </div>
+
+  <div class="cards-grid">
+
+    <div class="factory-card standard" (click)="produciStanza('STANDARD')">
+      <div class="icon-box">🛏️</div>
+      <h3>Standard Room</h3>
+      <p class="desc">Essenziale e accogliente.</p>
+      <div class="specs">
+        <span>👥 2 Ospiti</span>
+        <span>💰 80€</span>
+      </div>
+      <button class="btn-produce">Produci Standard</button>
+    </div>
+
+    <div class="factory-card deluxe" (click)="produciStanza('DELUXE')">
+      <div class="icon-box">🌅</div>
+      <h3>Deluxe Room</h3>
+      <p class="desc">Spaziosa con vista.</p>
+      <div class="specs">
+        <span>👥 3 Ospiti</span>
+        <span>💰 150€</span>
+      </div>
+      <button class="btn-produce">Produci Deluxe</button>
+    </div>
+
+    <div class="factory-card suite" (click)="produciStanza('SUITE')">
+      <div class="badge-vip">BEST SELLER</div>
+      <div class="icon-box">💎</div>
+      <h3>Golden Suite</h3>
+      <p class="desc">Lusso sfrenato e Jacuzzi.</p>
+      <div class="specs">
+        <span>👥 4 Ospiti</span>
+        <span>💰 300€</span>
+      </div>
+      <button class="btn-produce">Produci Suite</button>
+    </div>
+
+  </div>
+</div>

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/services/auth'; // Assicurati del percorso corretto
+import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -14,11 +14,8 @@ import { CommonModule } from '@angular/common';
       <p class="subtitle">Accedi per gestire le tue prenotazioni</p>
 
       <form (ngSubmit)="onLogin()">
-
         @if (errorMessage) {
-          <div class="error-banner">
-            {{ errorMessage }}
-          </div>
+          <div class="error-banner">{{ errorMessage }}</div>
         }
 
         <div class="form-group">
@@ -52,19 +49,38 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class Login {
-  authService = inject(AuthService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   email = '';
   password = '';
   errorMessage = '';
 
   onLogin() {
-    this.errorMessage = ''; // Reset errore locale
+    this.errorMessage = '';
 
     if (this.email && this.password) {
-      // ORA BASTA CHIAMARE IL METODO.
-      // Non usiamo più "const success =", perché il service gestisce tutto (anche gli errori con alert).
-      this.authService.login(this.email, this.password);
+      this.authService.login(this.email, this.password).subscribe({
+
+        next: (utenteRicevuto: any) => {
+          // DEBUG: Vediamo cosa arriva
+          console.log("DATI UTENTE:", utenteRicevuto);
+
+          // Controllo sicuro del ruolo
+          const ruolo = utenteRicevuto.role ? utenteRicevuto.role.trim().toUpperCase() : '';
+
+          if (ruolo === 'ADMIN') {
+            this.router.navigate(['/admin-dashboard']);
+          } else {
+            this.router.navigate(['/home']);
+          }
+        },
+
+        error: (errore) => {
+          console.error("Errore login:", errore);
+          this.errorMessage = 'Email o password sbagliata!';
+        }
+      });
     } else {
       this.errorMessage = 'Compila tutti i campi.';
     }
