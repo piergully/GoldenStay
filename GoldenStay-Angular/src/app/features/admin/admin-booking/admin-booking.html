@@ -1,0 +1,53 @@
+<div class="container">
+  <h1>📅 Gestione Prenotazioni</h1>
+
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Cliente</th>
+      <th>Stanza</th>
+      <th>Check-In</th>
+      <th>Check-Out</th>
+      <th>Stato</th>
+      <th>Azioni</th>
+    </tr>
+    </thead>
+    <tbody>
+
+      @for (booking of bookingService.bookings(); track booking.id) {
+        <tr>
+          <td>#{{ booking.id }}</td>
+          <td>{{ booking.user?.name || 'Utente Sconosciuto' }}</td>
+          <td>{{ booking.room?.title || 'Stanza Rimossa' }}</td>
+
+          <td>{{ booking.checkIn | date:'dd/MM/yyyy' }}</td>
+          <td>{{ booking.checkOut | date:'dd/MM/yyyy' }}</td>
+
+          <td>
+            <span class="badge"
+                  [class.confermata]="booking.status === 'CONFERMATA'"
+                  [class.cancellata]="booking.status === 'CANCELLATA'">
+              {{ booking.status }}
+            </span>
+          </td>
+
+          <td>
+            @if (booking.status !== 'CANCELLATA') {
+              <button class="btn-cancel" (click)="annullaPrenotazione(booking.id)">
+                ❌ Annulla
+              </button>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 30px;">
+            Nessuna prenotazione trovata nel sistema.
+          </td>
+        </tr>
+      }
+
+    </tbody>
+  </table>
+</div>

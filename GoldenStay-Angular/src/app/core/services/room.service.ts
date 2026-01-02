@@ -53,6 +53,12 @@ export class RoomService {
   getRoomById(id: number): Room | undefined {
     return this.rooms().find(r => r.id === id);
   }
+  deleteRoom(id: number) {
+    return this.http.delete(`${this.apiUrl}/${id}`).pipe(
+      // Ricarichiamo la lista automaticamente dopo l'eliminazione
+      tap(() => this.loadRooms())
+    );
+  }
   createRoomByFactory(type: string) {
     return this.http.post<Room>(`${this.apiUrl}/create/${type}`, {}).pipe(
       // IL TRUCCO È QUI: Dopo aver creato, ricarichiamo la lista!

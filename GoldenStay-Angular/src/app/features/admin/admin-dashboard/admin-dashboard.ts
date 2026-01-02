@@ -15,10 +15,23 @@ export class AdminDashboardComponent {
   // Iniettiamo il Service
   roomService = inject(RoomService);
 
-  // Funzione per eliminare (la collegheremo dopo al database)
+  // Funzione per eliminare (ORA È VERA!)
   eliminaStanza(id: number) {
-    if(confirm('Vuoi davvero eliminare questa stanza?')) {
-      alert('Funzionalità in arrivo prossimamente! ID: ' + id);
+    // 1. Chiediamo conferma per sicurezza, non si sa mai
+    if(!confirm('🗑️ Sei sicuro di voler eliminare questa stanza definitivamente?')) {
+      return;
     }
+
+    // 2. Chiamiamo il service per cancellare
+    this.roomService.deleteRoom(id).subscribe({
+      next: () => {
+        alert('✅ Stanza eliminata con successo!');
+        // La lista si aggiornerà da sola grazie al "tap" nel service
+      },
+      error: (err) => {
+        console.error('Errore:', err);
+        alert('❌ Impossibile eliminare la stanza. Controlla la console.');
+      }
+    });
   }
 }

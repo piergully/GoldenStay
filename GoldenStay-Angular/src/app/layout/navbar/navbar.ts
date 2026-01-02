@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Serve per usare @if
-import { RouterLink } from '@angular/router';
-import { AuthService } from '../../core/services/auth'; // Importiamo il cervello
+import { CommonModule } from '@angular/common';
+import { RouterLink, Router, NavigationEnd } from '@angular/router'; // Aggiunti Router e NavigationEnd
+import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-navbar',
@@ -15,7 +15,10 @@ import { AuthService } from '../../core/services/auth'; // Importiamo il cervell
 
       <nav>
         <ul>
-          <li><a routerLink="/">Home</a></li>
+
+          @if (isClientPage) {
+            <li><a routerLink="/">Home</a></li>
+          }
 
           @if (authService.currentUser()) {
 
@@ -48,7 +51,7 @@ import { AuthService } from '../../core/services/auth'; // Importiamo il cervell
       background-color: #2c3e50;
       color: white;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      position: sticky; /* Fa restare la navbar in alto */
+      position: sticky;
       top: 0;
       z-index: 1000;
     }
@@ -59,7 +62,6 @@ import { AuthService } from '../../core/services/auth'; // Importiamo il cervell
     a { text-decoration: none; color: white; transition: color 0.3s; font-size: 0.95rem; }
     a:hover { color: #d4af37; }
 
-    /* Stili specifici per i bottoni Auth */
     .user-welcome { color: #d4af37; font-weight: bold; border-right: 1px solid #555; padding-right: 20px; }
 
     .btn-register {
@@ -82,10 +84,23 @@ import { AuthService } from '../../core/services/auth'; // Importiamo il cervell
       font-size: 0.95rem;
       text-decoration: underline;
     }
-    .btn-logout:hover { color: #e74c3c; } /* Rosso quando passi sopra logout */
+    .btn-logout:hover { color: #e74c3c; }
   `]
 })
 export class Navbar {
-  // Iniettiamo il servizio e lo rendiamo PUBLIC così l'HTML può leggerlo
   public authService = inject(AuthService);
+  private router = inject(Router);
+
+  // Variabile che decide se mostrare il tasto Home
+  isClientPage: boolean = true;
+
+  constructor() {
+    // Ci mettiamo in ascolto dei cambi di pagina
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        // Se l'URL contiene '/admin', allora NON siamo nella pagina cliente
+        this.isClientPage = !event.url.includes('/admin');
+      }
+    });
+  }
 }

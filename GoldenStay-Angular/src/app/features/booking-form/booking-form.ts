@@ -1,12 +1,15 @@
-import { Component, inject, OnInit, effect } from '@angular/core'; // Aggiungi OnInit ed effect
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { RoomService } from '../../core/services/room.service'; // Importa il service
+import { RoomService } from '../../core/services/room.service';
+// 1. IMPORTIAMO IL MODALE (Non serve più il BookingService qui, perché lo usa il modale!)
+import { PaymentModal } from '../payment-modal/payment-modal'; // Controlla il percorso file
 
 @Component({
   selector: 'app-booking-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  // 2. AGGIUNGIAMO IL MODALE AGLI IMPORT DEL COMPONENTE
+  imports: [CommonModule, ReactiveFormsModule, PaymentModal],
   template: `
     <div class="booking-card">
       <div class="header">
@@ -50,19 +53,27 @@ import { RoomService } from '../../core/services/room.service'; // Importa il se
         </div>
 
         <button type="submit" [disabled]="bookingForm.invalid">
-          Conferma Prenotazione
+          Procedi al Pagamento
         </button>
 
       </form>
-
-      @if (isSubmitted) {
-        <div class="success-message">
-          ✅ Richiesta inviata! Ti contatteremo presto.
-        </div>
-      }
     </div>
+
+    @if (showPaymentModal) {
+      <app-payment-modal
+        [room]="currentRoom"
+        [totalPrice]="calcolaPrezzo()"
+        [guestName]="bookingForm.value.name"
+        [email]="bookingForm.value.email"
+        [checkIn]="bookingForm.value.checkIn"
+        [checkOut]="bookingForm.value.checkOut"
+        [guests]="bookingForm.value.guests"
+        (close)="showPaymentModal = false">
+      </app-payment-modal>
+    }
   `,
   styles: [`
+    /* ... (i tuoi stili rimangono uguali) ... */
     .booking-card { background: white; padding: 25px; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: sticky; top: 20px; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     h3 { margin: 0; color: #2c3e50; font-size: 1.2rem; }
@@ -81,15 +92,17 @@ import { RoomService } from '../../core/services/room.service'; // Importa il se
     }
     button:hover { background-color: #d4af37; transform: translateY(-2px); }
     button:disabled { background-color: #ccc; cursor: not-allowed; transform: none; }
-
-    .success-message { margin-top: 20px; padding: 15px; background: #e8f5e9; color: #2e7d32; border-radius: 6px; text-align: center; font-weight: bold; }
   `]
 })
 export class BookingForm implements OnInit {
   private fb = inject(FormBuilder);
-  private roomService = inject(RoomService); // Iniettiamo il service
+  private roomService = inject(RoomService);
 
-  isSubmitted = false;
+  // Variabile per mostrare/nascondere il modale
+  showPaymentModal = false;
+
+  // Variabile per tenere traccia della stanza attuale (se ti serve per il prezzo)
+  currentRoom: any = { title: 'Golden Suite', price: 150 }; // Esempio
 
   bookingForm: FormGroup = this.fb.group({
     name: ['', Validators.required],
@@ -100,11 +113,7 @@ export class BookingForm implements OnInit {
   });
 
   ngOnInit() {
-    // 1. Leggiamo i valori attuali della ricerca dal Service
     const searchCriteria = this.roomService.searchCriteria();
-
-    // 2. Aggiorniamo il form SOLO con i campi rilevanti (Date e Ospiti)
-    // patchValue serve per aggiornare solo alcuni campi del form
     this.bookingForm.patchValue({
       checkIn: searchCriteria.checkIn,
       checkOut: searchCriteria.checkOut,
@@ -112,11 +121,18 @@ export class BookingForm implements OnInit {
     });
   }
 
+  // Funzione semplice per calcolare il prezzo (puoi migliorarla dopo)
+  calcolaPrezzo(): number {
+    // Qui dovresti fare: (dataPartenza - dataArrivo) * prezzoStanza
+    return 350.00; // Valore finto per ora, giusto per testare
+  }
+
   onSubmit() {
     if (this.bookingForm.valid) {
-      console.log('Prenotazione:', this.bookingForm.value);
-      this.isSubmitted = true;
-      // In futuro qui invieremo i dati al server
+      // NON salviamo più nel DB qui.
+      // Invece, apriamo il modale. Sarà LUI a salvare quando l'utente paga.
+      console.log('Apro il pagamento...');
+      this.showPaymentModal = true;
     }
   }
 }

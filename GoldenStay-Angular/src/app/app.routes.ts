@@ -23,5 +23,9 @@ export const routes: Routes = [
     path: 'create-room',
     loadComponent: () => import('./features/admin/create-room/create-room').then(m => m.CreateRoomComponent),
   },
+  {
+    path: 'admin/booking',
+    loadComponent: () => import('./features/admin/admin-booking/admin-booking').then(m => m.AdminBookingsComponent)
+  },
   { path: '**', redirectTo: '' }
 ];
