@@ -1,19 +1,22 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { RoomService } from '../../core/services/room.service';
-import { AuthService } from '../../core/services/auth'; // Assicurati sia auth.service
-import { BookingCalculator } from '../../core/services/booking-calculator'; // Usa il Service corretto
-import { StandardPricingStrategy } from '../../core/strategies/price.strategy';
-import { Room } from '../../core/models/room.model';
 
-// 1. IMPORTA IL COMPONENTE CORRETTO
+// Services
+import { RoomService } from '../../core/services/room.service';
+import { AuthService } from '../../core/services/auth'; // Assicurati del nome file corretto
+import { BookingCalculator } from '../../core/services/booking-calculator';
+
+// Models & Strategies
+import { Room } from '../../core/models/room.model';
+import { StandardPricingStrategy } from '../../core/strategies/price.strategy'; // O il percorso dove hai salvato le strategie
+
+// Components
 import { PaymentModal } from '../payment-modal/payment-modal';
 
 @Component({
   selector: 'app-room-detail',
   standalone: true,
-  // 2. AGGIUNGILO AGLI IMPORTS
   imports: [CommonModule, RouterLink, PaymentModal],
   template: `
     <div class="detail-container" *ngIf="room; else notFound">
@@ -36,10 +39,10 @@ import { PaymentModal } from '../payment-modal/payment-modal';
 
           <h3>Servizi inclusi</h3>
           <ul class="services-list">
-            <li>Wi-Fi Gratuito</li>
-            <li>Colazione inclusa</li>
-            <li>Servizio in camera</li>
-            <li>Cancellazione gratuita</li>
+            <li><i class="icon">📶</i> Wi-Fi Gratuito</li>
+            <li><i class="icon">🍳</i> Colazione inclusa</li>
+            <li><i class="icon">🧹</i> Servizio in camera</li>
+            <li><i class="icon">🛡️</i> Cancellazione gratuita</li>
           </ul>
         </div>
 
@@ -50,11 +53,11 @@ import { PaymentModal } from '../payment-modal/payment-modal';
 
             <div class="calculation-box" *ngIf="totalPrice > 0">
               <div class="row">
-                <span>Date:</span>
-                <span>{{ nights }} notti</span>
+                <span>Date ({{ nights }} notti):</span>
+                <span style="font-size: 0.85rem">{{ currentCheckIn | date:'dd/MM' }} - {{ currentCheckOut | date:'dd/MM' }}</span>
               </div>
               <div class="row">
-                <span>Tariffa:</span>
+                <span>Tariffa applicata:</span>
                 <span class="tariff-name">{{ appliedTariff }}</span>
               </div>
 
@@ -67,18 +70,19 @@ import { PaymentModal } from '../payment-modal/payment-modal';
                   @if (totalPrice < originalPrice) {
                     <span class="old-price">{{ originalPrice | currency:'EUR' }}</span>
                   }
-
                   <span class="big-total">{{ totalPrice | currency:'EUR' }}</span>
                 </div>
               </div>
-
             </div>
 
             <button class="btn-book" (click)="onBook()">
-              Prenota Ora
+              {{ authService.isLoggedIn ? 'Prenota Ora' : 'Accedi per Prenotare' }}
             </button>
 
-            <p class="note">Nessun addebito immediato.</p>
+            <p class="note">
+              <span *ngIf="!authService.isLoggedIn">Verrai reindirizzato al login. </span>
+              Nessun addebito immediato.
+            </p>
           </div>
         </div>
 
@@ -97,53 +101,71 @@ import { PaymentModal } from '../payment-modal/payment-modal';
     }
 
     <ng-template #notFound>
-      <div class="error"><h2>Stanza non trovata!</h2><button routerLink="/">Torna alla Home</button></div>
+      <div class="error-container">
+        <h2>Stanza non trovata!</h2>
+        <button routerLink="/" class="back-btn">Torna alla Home</button>
+      </div>
     </ng-template>
   `,
   styles: [`
-    .detail-container { max-width: 1000px; margin: 20px auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .image-header img { width: 100%; height: 350px; object-fit: cover; }
-    .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; padding: 2rem; }
-    @media (max-width: 768px) { .content-grid { grid-template-columns: 1fr; } }
+    .detail-container { max-width: 1100px; margin: 30px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); font-family: 'Segoe UI', sans-serif; }
 
-    .back-btn { background: none; border: none; color: #666; cursor: pointer; margin-bottom: 1rem; text-decoration: underline; }
-    h1 { margin: 0 0 10px 0; color: #2c3e50; }
-    .base-price-tag { display: inline-block; background: #f0f4f8; color: #2c3e50; padding: 5px 10px; border-radius: 4px; margin-bottom: 20px; font-size: 0.95rem; }
-    .desc { color: #555; line-height: 1.6; }
-    .services-list { padding-left: 20px; color: #555; line-height: 1.8; }
+    .image-header img { width: 100%; height: 400px; object-fit: cover; }
 
-    .booking-card { background: #fffdf5; padding: 25px; border: 1px solid #d4af37; border-radius: 12px; box-shadow: 0 5px 15px rgba(212, 175, 55, 0.1); position: sticky; top: 20px; }
-    .row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem; color: #555; }
-    .tariff-name { font-weight: bold; color: #2c3e50; font-size: 0.85rem; }
-    hr { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
+    .content-grid { display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 50px; padding: 3rem; }
+    @media (max-width: 900px) { .content-grid { grid-template-columns: 1fr; padding: 1.5rem; } }
+
+    .back-btn { background: none; border: none; color: #666; cursor: pointer; margin-bottom: 1rem; text-decoration: underline; font-size: 0.9rem; }
+
+    h1 { margin: 0 0 15px 0; color: #2c3e50; font-size: 2.2rem; }
+
+    .base-price-tag { display: inline-block; background: #eef2f7; color: #4a5568; padding: 6px 12px; border-radius: 6px; margin-bottom: 25px; font-size: 0.9rem; border: 1px solid #cbd5e0; }
+
+    .desc { color: #4a5568; line-height: 1.7; font-size: 1.05rem; margin-bottom: 2rem; }
+
+    .services-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .services-list li { color: #555; display: flex; align-items: center; gap: 8px; }
+
+    /* Card Booking */
+    .booking-card { background: #fff; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); position: sticky; top: 30px; }
+
+    .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1rem; color: #718096; }
+    .tariff-name { font-weight: 600; color: #2d3748; background: #e6fffa; color: #2c7a7b; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
+
+    hr { border: 0; border-top: 1px dashed #cbd5e0; margin: 20px 0; }
 
     .total-section { display: flex; justify-content: space-between; align-items: center; }
-    .total-section > span { font-weight: bold; font-size: 1.1rem; color: #555; }
-    .price-stack { display: flex; flex-direction: column; align-items: flex-end; }
-    .old-price { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-bottom: -5px; }
-    .big-total { font-size: 1.8rem; font-weight: bold; color: #d4af37; }
+    .total-section > span { font-weight: 600; font-size: 1.1rem; color: #2d3748; }
 
-    .btn-book { width: 100%; padding: 15px; background-color: #d4af37; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1.2rem; margin-top: 20px; }
-    .btn-book:hover { background-color: #b39028; }
-    .note { font-size: 0.75rem; color: #999; margin-top: 10px; text-align: center; }
-    .error { text-align: center; padding: 50px; }
+    .price-stack { display: flex; flex-direction: column; align-items: flex-end; }
+    .old-price { text-decoration: line-through; color: #a0aec0; font-size: 1rem; }
+    .big-total { font-size: 2rem; font-weight: 800; color: #d4af37; letter-spacing: -0.5px; }
+
+    .btn-book { width: 100%; padding: 16px; background: linear-gradient(135deg, #d4af37 0%, #c5a028 100%); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; font-size: 1.1rem; margin-top: 25px; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3); }
+    .btn-book:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4); }
+
+    .note { font-size: 0.8rem; color: #a0aec0; margin-top: 15px; text-align: center; }
+    .error-container { text-align: center; padding: 50px; }
   `]
 })
 export class RoomDetail implements OnInit {
+  // Dependency Injection
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private roomService = inject(RoomService);
-  // Rendiamo authService PUBLIC così possiamo usarlo nel template HTML
-  public authService = inject(AuthService);
-  private calculator = inject(BookingCalculator);
+  private calculator = inject(BookingCalculator); // Il nostro nuovo Service che gestisce le strategie
+  public authService = inject(AuthService);       // Public per usarlo nell'HTML
 
+  // Stato della Stanza
   room: Room | undefined;
+
+  // Variabili per il calcolo prezzi
   totalPrice = 0;
-  originalPrice = 0;
+  originalPrice = 0; // Serve per mostrare il prezzo barrato (es. Standard vs Scontato)
   appliedTariff = '';
   nights = 0;
 
-  // 4. NUOVE VARIABILI PER IL MODALE
+  // Stato del Modale e Date
   showModal = false;
   currentCheckIn = '';
   currentCheckOut = '';
@@ -152,15 +174,22 @@ export class RoomDetail implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
       this.room = this.roomService.getRoomById(id);
+      // Appena carichiamo la stanza, calcoliamo il preventivo
       this.calculatePreview();
     }
   }
 
+  /**
+   * Calcola il prezzo basandosi sulle date selezionate (o default)
+   * e sulla strategia migliore disponibile.
+   */
   calculatePreview() {
+    // 1. Recupera le date dalla ricerca (o usa date default)
     const criteria = this.roomService.searchCriteria();
     let checkIn = criteria.checkIn;
     let checkOut = criteria.checkOut;
 
+    // Fallback: se non ci sono date, imposta Oggi -> Domani
     if (!checkIn || !checkOut) {
       const today = new Date();
       const tomorrow = new Date(today);
@@ -170,42 +199,50 @@ export class RoomDetail implements OnInit {
     }
 
     if (this.room && checkIn && checkOut) {
-      // 5. SALVIAMO LE DATE PER IL MODALE
       this.currentCheckIn = checkIn;
       this.currentCheckOut = checkOut;
 
+      // 2. Chiede al Calculator la strategia migliore (es. LongStay se > 7 notti)
       const bestStrategy = this.calculator.getBestStrategy(checkIn, checkOut);
+
+      // 3. Calcola il prezzo finale
       this.totalPrice = this.calculator.calculateTotal(bestStrategy, this.room.pricePerNight, checkIn, checkOut);
       this.appliedTariff = bestStrategy.getName();
 
+      // 4. Calcola il prezzo "Standard" per confronto (Prezzo Barrato)
       const standardStrategy = new StandardPricingStrategy();
       this.originalPrice = this.calculator.calculateTotal(standardStrategy, this.room.pricePerNight, checkIn, checkOut);
 
+      // 5. Calcola durata notti per la UI
       const start = new Date(checkIn).getTime();
       const end = new Date(checkOut).getTime();
       this.nights = Math.ceil((end - start) / (1000 * 3600 * 24));
     }
   }
 
+  /**
+   * Gestisce il click su "Prenota Ora"
+   */
+  onBook() {
+    if (this.authService.isLoggedIn) {
+      // Caso 1: Utente loggato -> Apre il modale di pagamento
+      this.showModal = true;
+    } else {
+      // Caso 2: Utente NON loggato -> Redirect al login
+
+      // Salva l'URL corrente per tornarci dopo il login
+      this.authService.redirectUrl = this.router.url;
+
+      // Naviga alla pagina di login
+      this.router.navigate(['/login']);
+    }
+  }
+
+  // Helper privato per formattare le date (YYYY-MM-DD)
   private formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  }
-
-  onBook() {
-    if (this.authService.isLoggedIn) {
-      // Se loggato -> Apre il modale
-      this.showModal = true;
-    } else {
-      // Se NON loggato ->
-
-      // 1. Salviamo l'URL corrente (es. '/room/1') nel servizio
-      this.authService.redirectUrl = this.router.url;
-
-      // 2. Poi lo mandiamo a registrarsi (o login)
-      this.router.navigate(['/login']); // Meglio mandarlo al login, da lì può andare al register se vuole
-    }
   }
 }
