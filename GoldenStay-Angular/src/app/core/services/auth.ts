@@ -9,6 +9,7 @@ export interface User {
   email: string;
   password?: string;
   role?: string;
+  token?: string; // Aggiungo questo perché con la sicurezza spesso arriva un token
 }
 
 @Injectable({
@@ -17,38 +18,51 @@ export interface User {
 export class AuthService {
   private router = inject(Router);
   private http = inject(HttpClient);
+
+  // Assicurati che la porta sia quella giusta (8080 o quella che usa il tuo collega)
   private apiUrl = 'http://localhost:8080/api/users';
 
   currentUser = signal<User | null>(null);
 
-  // Questa variabile serve per non far rompere room-detail
   redirectUrl: string | null = null;
 
-  constructor() {}
+  constructor() {
+    // 1. AL RITMO DI AVVIO: Controlliamo se c'è un utente salvato nella "tasca" del browser
+    const utenteSalvato = localStorage.getItem('utente_loggato');
+    if (utenteSalvato) {
+      this.currentUser.set(JSON.parse(utenteSalvato));
+      console.log('Utente ripristinato dalla memoria:', JSON.parse(utenteSalvato));
+    }
+  }
 
-  // --- 1. LOGIN (Restituisce Observable) ---
-  // Questo serve al Login.ts per decidere se andare in Dashboard o Home
+  // --- LOGIN ---
   login(email: string, pass: string) {
     const loginData = { email, password: pass };
 
     return this.http.post<User>(`${this.apiUrl}/login`, loginData).pipe(
       tap((userFound) => {
         console.log("Service: Login effettuato", userFound);
+
+        // 2. SALVIAMO L'UTENTE: Aggiorniamo il segnale E la memoria del browser
         this.currentUser.set(userFound);
+        localStorage.setItem('utente_loggato', JSON.stringify(userFound));
       })
     );
   }
 
-  // --- 2. REGISTRAZIONE (Gestisce la subscribe internamente) ---
-  // Questo lo rimettiamo come prima così la pagina di registrazione torna a funzionare!
+  // --- REGISTRAZIONE ---
   register(name: string, email: string, pass: string) {
     const newUser: User = { name, email, password: pass };
 
     this.http.post<User>(`${this.apiUrl}/register`, newUser).subscribe({
       next: (savedUser) => {
         alert('Registrazione completata! Benvenuto ' + savedUser.name);
+
+        // Anche qui, se la registrazione fa auto-login, salviamo tutto
         this.currentUser.set(savedUser);
-        this.router.navigate(['/home']); // O dove vuoi mandarlo
+        localStorage.setItem('utente_loggato', JSON.stringify(savedUser));
+
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error(err);
@@ -57,11 +71,15 @@ export class AuthService {
     });
   }
 
+  // --- LOGOUT ---
   logout() {
+    // 3. PULIZIA: Svuotiamo segnale e memoria
     this.currentUser.set(null);
+    localStorage.removeItem('utente_loggato');
     this.router.navigate(['/login']);
   }
 
+  // Questa proprietà ora funzionerà anche dopo il refresh (F5)
   get isLoggedIn() {
     return !!this.currentUser();
   }

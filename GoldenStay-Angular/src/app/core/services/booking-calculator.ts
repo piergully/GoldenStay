@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-// Importa la nuova WeekendStrategy
+// Assicurati che il percorso importi il file strategies.ts creato prima
 import { PricingStrategy, StandardPricingStrategy, LongStayDiscountStrategy, WeekendStrategy } from '../strategies/price.strategy';
 
 @Injectable({
@@ -7,52 +7,71 @@ import { PricingStrategy, StandardPricingStrategy, LongStayDiscountStrategy, Wee
 })
 export class BookingCalculator {
 
-  calculateTotal(strategy: PricingStrategy, pricePerNight: number, checkIn: string, checkOut: string): number {
+  /**
+   * Esegue il calcolo delegando alla strategia passata.
+   */
+  public calculateTotal(strategy: PricingStrategy, pricePerNight: number, checkIn: string, checkOut: string): number {
     const nights = this.getNights(checkIn, checkOut);
     if (nights <= 0) return 0;
     return strategy.calculate(pricePerNight, nights);
   }
 
   // --- LOGICA DI SCELTA (FACTORY) ---
-  getBestStrategy(checkIn: string, checkOut: string): PricingStrategy {
+
+  /**
+   * Decide la strategia migliore.
+   * Ordine di priorità:
+   * 1. Sconto Lungo Soggiorno (vince su tutto)
+   * 2. Maggiorazione Weekend (solo se non è lungo soggiorno)
+   * 3. Standard
+   */
+  public getBestStrategy(checkIn: string, checkOut: string): PricingStrategy {
     const start = new Date(checkIn);
     const end = new Date(checkOut);
     const nights = this.getNights(checkIn, checkOut);
 
-    // 1. Controlliamo se nel periodo c'è un weekend (Venerdì o Sabato notte)
-    if (this.hasWeekend(start, end)) {
-      return new WeekendStrategy();
-    }
-
-    // 2. Se non è weekend, controlliamo la durata
+    // 1. PRIORITÀ AL CLIENTE: Prima verifichiamo se merita lo sconto
     if (nights > 7) {
       return new LongStayDiscountStrategy();
     }
 
-    // 3. Altrimenti Standard
+    // 2. Se è un soggiorno breve, controlliamo se cade nel weekend
+    if (this.hasWeekend(start, end)) {
+      return new WeekendStrategy();
+    }
+
+    // 3. Altrimenti tariffa normale
     return new StandardPricingStrategy();
   }
 
-  // Helper: Conta le notti
+  // --- HELPER PRIVATI ---
+
   private getNights(inDate: string, outDate: string): number {
     if (!inDate || !outDate) return 0;
     const start = new Date(inDate);
     const end = new Date(outDate);
     const diff = end.getTime() - start.getTime();
-    return Math.ceil(diff / (1000 * 3600 * 24));
+
+    // Math.ceil assicura che se esci tardi conta come notte (opzionale)
+    const nights = Math.ceil(diff / (1000 * 3600 * 24));
+    return nights > 0 ? nights : 0;
   }
 
-  // Helper: Scansiona i giorni per trovare Venerdì (5) o Sabato (6)
+  /**
+   * Scansiona i giorni reali per vedere se includono venerdì notte o sabato notte.
+   */
   private hasWeekend(start: Date, end: Date): boolean {
+    // Cloniamo la data per non modificare l'oggetto originale durante il loop
     let current = new Date(start);
-    // Cicla giorno per giorno fino alla data di uscita
-    while (current < end) {
+    const endDate = new Date(end);
+
+    while (current < endDate) {
       const day = current.getDay();
-      // 5 = Venerdì, 6 = Sabato
+      // 5 = Venerdì (notte su sabato), 6 = Sabato (notte su domenica)
       if (day === 5 || day === 6) {
         return true;
       }
-      // Vai al giorno dopo
+      // Avanza di 1 giorno
       current.setDate(current.getDate() + 1);
     }
     return false;

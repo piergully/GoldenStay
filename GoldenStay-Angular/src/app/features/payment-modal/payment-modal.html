@@ -1,1 +1,71 @@
-<p>payment-modal works!</p>
+<div class="modal-overlay">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Pagamento Sicuro</h3>
+      <button class="close-btn" (click)="close.emit()">✕</button>
+    </div>
+
+    <div class="modal-body">
+
+      @if (step === 'form') {
+        <div class="summary">
+          Stai prenotando: <strong>{{ room?.title || 'Stanza GoldenStay' }}</strong><br>
+          Totale da pagare: <span class="total">{{ totalPrice | currency:'EUR' }}</span>
+        </div>
+
+        <form (ngSubmit)="processPayment()">
+          <div class="form-group">
+            <label>Intestatario Carta</label>
+            <input type="text" placeholder="Mario Rossi" required
+                   [(ngModel)]="cardName" name="cardName">
+          </div>
+
+          <div class="form-group">
+            <label>Numero Carta</label>
+            <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" required
+                   [(ngModel)]="cardNumber" name="cardNumber"
+                   (input)="formatCardNumber($event)">
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label>Scadenza</label>
+              <input type="text" placeholder="MM/YY" maxlength="5" required
+                     [(ngModel)]="cardExpiry" name="cardExpiry"
+                     (input)="formatExpiry($event)">
+            </div>
+            <div class="form-group">
+              <label>CVV</label>
+              <input type="text" placeholder="123" maxlength="3" required
+                     [(ngModel)]="cardCvv" name="cardCvv"
+                     (input)="formatCVV($event)">
+            </div>
+          </div>
+
+          <button type="submit" class="pay-btn">Paga Ora</button>
+        </form>
+      }
+
+      @if (step === 'loading') {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Elaborazione pagamento e prenotazione...</p>
+        </div>
+      }
+
+      @if (step === 'success') {
+        <div class="success-state">
+          <div class="check-icon">✅</div>
+          <h3>Pagamento Riuscito!</h3>
+          <p>La tua prenotazione è stata salvata nel database.</p>
+
+          <button class="download-btn" (click)="generatePDF()">
+            📄 Scarica Ricevuta (PDF)
+          </button>
+        </div>
+      }
+
+    </div>
+  </div>
+</div>

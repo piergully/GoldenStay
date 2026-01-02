@@ -30,7 +30,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginData) {
         // Cerca l'utente con email e password
-        User user = userRepository.findByEmailAndPassword(loginData.getEmail(), loginData.getPassword());
+        User user = userRepository.findByEmailAndPassword(loginData.getEmail(), loginData.getPassword()).orElse(null);
 
         if (user != null) {
             return ResponseEntity.ok(user); // Login OK: restituisce l'utente

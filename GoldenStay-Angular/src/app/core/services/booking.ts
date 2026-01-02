@@ -1,38 +1,32 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
-import { Observable } from 'rxjs'; // <--- Aggiunto questo import utile
+import { Observable } from 'rxjs';
 
-// 1. Interfaccia per QUANDO LEGGI dal server (nomi come arrivano dal JSON backend)
 export interface Booking {
   id: number;
-  checkIn: string;
-  checkOut: string;
+  nomeUtente: string;
+  nomeStanza: string;
+  dataArrivo: string;
+  dataPartenza: string;
   status: string;
-  room?: {
-    id: number;
-    title: string;
-  };
-  user?: {
-    id: number;
-    name: string;
-    email: string;
-  };
+  prezzoTotale: number;
+  ospiti: number;
 }
 
+// FONDAMENTALE: Senza questo Angular non "vede" il servizio!
 @Injectable({
   providedIn: 'root'
 })
 export class BookingService {
 
   private http = inject(HttpClient);
-  // Indirizzo base: assicurati che il tuo Controller Java risponda qui
   private apiUrl = 'http://localhost:8080/api/bookings';
 
-  // 2. Il Signal per la lista
+  // Signal per la lista (ottimo per la reattività della tabella admin)
   bookings = signal<Booking[]>([]);
 
-  // 3. Carica le prenotazioni
+  // Carica le prenotazioni dal backend
   loadBookings() {
     this.http.get<Booking[]>(this.apiUrl).subscribe({
       next: (data) => {
@@ -43,15 +37,14 @@ export class BookingService {
     });
   }
 
-  // 4. Annulla prenotazione
+  // Annulla prenotazione
   cancelBooking(id: number) {
     return this.http.put(`${this.apiUrl}/${id}/cancel`, {}).pipe(
       tap(() => this.loadBookings())
     );
   }
 
-  // --- 5. NUOVO METODO: Crea Prenotazione ---
-
+  // Salva la nuova prenotazione nel DB
   creaPrenotazione(datiPrenotazione: any): Observable<any> {
 
     return this.http.post(`${this.apiUrl}/salva`, datiPrenotazione);

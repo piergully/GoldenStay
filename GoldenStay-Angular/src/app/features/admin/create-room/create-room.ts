@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router'; // Serve per tornare indietro dopo aver creato
-import { RoomService } from '../../../core/services/room.service'; // Controlla sempre i puntini!
+import { Router } from '@angular/router';
+import { RoomService } from '../../../core/services/room.service';
 
 @Component({
   selector: 'app-create-room',
