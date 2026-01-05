@@ -4,7 +4,6 @@
     ⬅ Torna alla Dashboard
   </button>
 
-
   <h1>📅 Gestione Prenotazioni</h1>
 
   <table>
@@ -15,7 +14,7 @@
       <th>Stanza</th>
       <th>Check-In</th>
       <th>Check-Out</th>
-      <th>Stato</th>
+      <th>Totale</th> <th>Stato</th>
       <th>Azioni</th>
     </tr>
     </thead>
@@ -24,11 +23,15 @@
       @for (booking of bookingService.bookings(); track booking.id) {
         <tr>
           <td>#{{ booking.id }}</td>
-          <td>{{ booking.nomeUtente|| 'Utente Sconosciuto' }}</td>
-          <td>{{ booking.nomeStanza|| 'Stanza Rimossa' }}</td>
 
-          <td>{{ booking.dataArrivo | date:'dd/MM/yyyy' }}</td>
-          <td>{{ booking.dataPartenza | date:'dd/MM/yyyy' }}</td>
+          <td>{{ booking.user?.name || 'Utente Sconosciuto' }}</td>
+
+          <td>{{ booking.room?.title || 'Stanza Rimossa' }}</td>
+
+          <td>{{ booking.checkIn | date:'dd/MM/yyyy' }}</td>
+          <td>{{ booking.checkOut | date:'dd/MM/yyyy' }}</td>
+
+          <td>{{ booking.totalPrice | currency:'EUR' }}</td>
 
           <td>
             <span class="badge"
@@ -48,7 +51,7 @@
         </tr>
       } @empty {
         <tr>
-          <td colspan="7" style="text-align: center; padding: 30px;">
+          <td colspan="8" style="text-align: center; padding: 30px;">
             Nessuna prenotazione trovata nel sistema.
           </td>
         </tr>

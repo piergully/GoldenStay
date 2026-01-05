@@ -3,18 +3,25 @@ import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
+// 1. CORREZIONE INTERFACCIA
+// Deve rispecchiare ESATTAMENTE il JSON che arriva da Java (Entity Booking.java)
 export interface Booking {
   id: number;
-  nomeUtente: string;
-  nomeStanza: string;
-  dataArrivo: string;
-  dataPartenza: string;
+  checkIn: string;       // Java manda "checkIn", non "dataArrivo"
+  checkOut: string;      // Java manda "checkOut"
+  totalPrice: number;    // Java manda "totalPrice"
   status: string;
-  prezzoTotale: number;
-  ospiti: number;
+
+  // Java manda l'oggetto intero, non solo il nome!
+  user: {
+    name: string;
+    email: string;
+  };
+  room: {
+    title: string;
+  };
 }
 
-// FONDAMENTALE: Senza questo Angular non "vede" il servizio!
 @Injectable({
   providedIn: 'root'
 })
@@ -23,30 +30,27 @@ export class BookingService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:8080/api/bookings';
 
-  // Signal per la lista (ottimo per la reattività della tabella admin)
   bookings = signal<Booking[]>([]);
 
   // Carica le prenotazioni dal backend
   loadBookings() {
-    this.http.get<Booking[]>(this.apiUrl).subscribe({
+    // 2. CORREZIONE URL: Aggiungiamo "/all" perché il Controller ha @GetMapping("/all")
+    this.http.get<Booking[]>(`${this.apiUrl}/all`).subscribe({
       next: (data) => {
+        console.log('Dati ricevuti dal DB:', data); // Controlla questo log nel browser!
         this.bookings.set(data);
-        console.log('Prenotazioni caricate:', data);
       },
       error: (err) => console.error('Errore caricamento prenotazioni:', err)
     });
   }
 
-  // Annulla prenotazione
   cancelBooking(id: number) {
-    return this.http.put(`${this.apiUrl}/${id}/cancel`, {}).pipe(
+    return this.http.delete(`${this.apiUrl}/cancel/${id}`).pipe( // Solitamente è DELETE, controlla il controller
       tap(() => this.loadBookings())
     );
   }
 
-  // Salva la nuova prenotazione nel DB
   creaPrenotazione(datiPrenotazione: any): Observable<any> {
-
     return this.http.post(`${this.apiUrl}/salva`, datiPrenotazione);
   }
 }
