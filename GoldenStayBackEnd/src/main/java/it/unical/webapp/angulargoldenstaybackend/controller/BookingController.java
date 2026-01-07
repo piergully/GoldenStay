@@ -60,13 +60,16 @@ public class BookingController {
     }
 
     // 3. CANCELLA UNA PRENOTAZIONE (Per l'Admin)
+
     @DeleteMapping("/cancel/{id}")
     public ResponseEntity<?> cancelBooking(@PathVariable Long id) {
         if (bookingRepository.existsById(id)) {
             bookingRepository.deleteById(id);
-            return ResponseEntity.ok("Prenotazione cancellata con successo.");
+            // SOLUZIONE: Restituiamo un JSON valido
+            return ResponseEntity.ok(java.util.Map.of("message", "Prenotazione cancellata"));
         } else {
-            return ResponseEntity.badRequest().body("Prenotazione non trovata.");
+            return ResponseEntity.status(404).body(java.util.Map.of("error", "Prenotazione non trovata"));
         }
     }
+
 }

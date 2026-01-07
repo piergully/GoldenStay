@@ -7,14 +7,25 @@
     </div>
 
     <nav class="sidebar-menu">
-      <a class="menu-item active"><i class="icon">🏠</i> Gestione Stanze</a>
-      <a class="menu-item active" routerLink="/admin/booking" routerLinkActive="active">
+
+      <a class="menu-item"
+         routerLink="/admin-dashboard"
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{exact: true}">
+        <i class="icon">🏠</i> Gestione Stanze
+      </a>
+
+      <a class="menu-item"
+         routerLink="/admin/booking"
+         routerLinkActive="active">
         <i class="icon">📅</i> Prenotazioni
       </a>
+
       <div class="spacer"></div>
-      <a class="menu-item logout"><i class="icon">🚪</i> Logout</a>
+
     </nav>
   </aside>
+
 
   <main class="main-content">
 
@@ -48,7 +59,7 @@
             </div>
 
             <div class="actions">
-              <button class="btn-edit">✏️ Modifica</button>
+              <button class="btn-edit" (click)="apriModifica(room)">✏️ Modifica</button>
               <button class="btn-delete" (click)="eliminaStanza(room.id!)">🗑️ Elimina</button>
             </div>
           </div>
@@ -61,5 +72,52 @@
       }
 
     </div>
+    @if (editingRoom) {
+      <div class="modal-backdrop" (click)="chiudiModale()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+
+          <div class="modal-header">
+            <h2>✏️ Modifica Stanza</h2>
+            <button class="btn-close" (click)="chiudiModale()">✖</button>
+          </div>
+
+          <div class="modal-body">
+
+            <div class="form-group">
+              <label>Titolo Stanza</label>
+              <input type="text" [(ngModel)]="editingRoom.title" placeholder="Es. Suite Imperiale">
+            </div>
+
+            <div class="form-group">
+              <label>Descrizione</label>
+              <textarea [(ngModel)]="editingRoom.description" rows="3"></textarea>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label>Prezzo (€)</label>
+                <input type="number" [(ngModel)]="editingRoom.pricePerNight">
+              </div>
+              <div class="form-group">
+                <label>Capienza (Persone)</label>
+                <input type="number" [(ngModel)]="editingRoom.capacity">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>URL Immagine</label>
+              <input type="text" [(ngModel)]="editingRoom.imageUrl">
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn-cancel" (click)="chiudiModale()">Annulla</button>
+            <button class="btn-save" (click)="salvaModifiche()">💾 Salva Modifiche</button>
+          </div>
+
+        </div>
+      </div>
+    }
   </main>
 </div>

@@ -8,13 +8,11 @@ import { tap } from 'rxjs/operators';
 })
 export class RoomService {
   private http = inject(HttpClient);
-
-  // URL del Backend Spring Boot
   private apiUrl = 'http://localhost:8080/api/rooms';
 
-  // Array reattivo che si riempirà con i dati del DB
   rooms = signal<Room[]>([]);
 
+  // Criteri di ricerca
   searchCriteria = signal({
     guests: 1,
     checkIn: '',
@@ -25,18 +23,18 @@ export class RoomService {
     this.loadRooms();
   }
 
-  private loadRooms() {
-    // Chiamata GET a Spring Boot
+  // Carica stanze dal DB
+  loadRooms() {
     this.http.get<Room[]>(this.apiUrl).subscribe({
       next: (data) => {
-        console.log('Dati ricevuti da Spring Boot:', data);
+        console.log('Stanze caricate:', data);
         this.rooms.set(data);
       },
-      error: (err) => console.error('Errore connessione backend:', err)
+      error: (err) => console.error('Errore Backend:', err)
     });
   }
 
-  // Il resto rimane UGUALE (Angular non sa che i dati vengono dal DB!)
+  // Filtro
   filteredRooms = computed(() => {
     const criteria = this.searchCriteria();
     return this.rooms().filter(room => room.capacity >= criteria.guests);
@@ -46,23 +44,30 @@ export class RoomService {
     this.searchCriteria.set({ guests, checkIn, checkOut });
   }
 
-  searchCriteriaInfo() {
-    return this.searchCriteria();
+  // CANCELLA STANZA
+  // Ora funziona perché abbiamo aggiunto @DeleteMapping nel backend
+  deleteRoom(id: number) {
+    return this.http.delete(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.loadRooms()) // Ricarica la lista dopo aver cancellato
+    );
+  }
+
+  // CREA STANZA (FACTORY)
+  // Ora funziona perché abbiamo aggiunto @PostMapping("/create/{type}") nel backend
+  createRoomByFactory(type: string) {
+    return this.http.post<Room>(`${this.apiUrl}/create/${type}`, {}).pipe(
+      tap(() => this.loadRooms()) // Ricarica la lista dopo aver creato
+    );
   }
 
   getRoomById(id: number): Room | undefined {
     return this.rooms().find(r => r.id === id);
   }
-  deleteRoom(id: number) {
-    return this.http.delete(`${this.apiUrl}/${id}`).pipe(
-      // Ricarichiamo la lista automaticamente dopo l'eliminazione
-      tap(() => this.loadRooms())
-    );
-  }
-  createRoomByFactory(type: string) {
-    return this.http.post<Room>(`${this.apiUrl}/create/${type}`, {}).pipe(
-      // IL TRUCCO È QUI: Dopo aver creato, ricarichiamo la lista!
-      tap(() => this.loadRooms())
+  // Aggiungi questo sotto a deleteRoom
+  updateRoom(id: number, room: any) {
+    // Nota: chiamiamo l'URL base + id
+    return this.http.put<Room>(`${this.apiUrl}/${id}`, room).pipe(
+      tap(() => this.loadRooms()) // Ricarica la lista dopo la modifica
     );
   }
 }

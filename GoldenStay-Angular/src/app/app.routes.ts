@@ -31,7 +31,7 @@ export const routes: Routes = [
 
   {
     path: 'admin-dashboard',
-    loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard').then(m => m.AdminDashboardComponent),
+    loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard),
     canActivate: [authGuard] // <--- IL LUCCHETTO
   },
   {
