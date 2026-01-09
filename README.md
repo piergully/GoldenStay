@@ -27,6 +27,6 @@ Per motivi di sicurezza, il file con le credenziali del database (`application.p
 3.  **Avvia il Backend:**
     Una volta configurato il file, esegui il progetto. Hibernate creerà automaticamente le tabelle necessarie.
 4.  **Pattern Utilizzati**
-    - Strategy (../frontend/app/core/strategies), calcolo prezzi per ogni tipo di stanza.
-    - Factory (../backend/.../factories), creazione di oggetti di tipo Stanza.
+    - Strategy (../frontend/.../app/core/strategies), calcolo prezzi per ogni tipo di stanza.
+    - Factory (../backend/.../factory), creazione di oggetti di tipo Stanza.
 
