@@ -108,7 +108,7 @@
 .room-card {
   background: white;
   border-radius: 16px;
-  overflow: hidden; /* IMPORTANTE: Taglia tutto ciò che esce */
+  overflow: hidden;
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
   transition: transform 0.3s;
   border: 1px solid #f0f0f0;
@@ -121,7 +121,7 @@
 /* IMMAGINE SICURA */
 .card-image {
   width: 100%;
-  height: 200px; /* ALTEZZA FISSA: Impedisce l'esplosione verticale */
+  height: 200px;
   position: relative;
   background-color: #eee;
 }
@@ -129,7 +129,7 @@
 .card-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* IMPORTANTE: Adatta l'immagine senza deformarla */
+  object-fit: cover;
   display: block;
 }
 
