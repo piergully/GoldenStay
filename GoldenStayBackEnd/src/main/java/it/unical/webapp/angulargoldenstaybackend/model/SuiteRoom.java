@@ -9,7 +9,7 @@ public class SuiteRoom extends Room {
 
     public SuiteRoom() {
         super();
-        // mettiamo i valori di default
+
         this.setTitle("Golden Suite");
         this.setPricePerNight(300.00);
         this.setCapacity(4);

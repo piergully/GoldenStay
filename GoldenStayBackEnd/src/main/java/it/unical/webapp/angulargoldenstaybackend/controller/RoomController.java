@@ -3,11 +3,13 @@ package it.unical.webapp.angulargoldenstaybackend.controller;
 import it.unical.webapp.angulargoldenstaybackend.model.Room;
 import it.unical.webapp.angulargoldenstaybackend.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat; // <--- IMPORT NUOVO
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate; // <--- IMPORT NUOVO
+import it.unical.webapp.angulargoldenstaybackend.factory.RoomFactory;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -40,18 +42,23 @@ public class RoomController {
         return roomRepository.findById(id).orElse(null);
     }
 
-    // 3. CREAZIONE
-    @PostMapping("/create/{type}")
+
+    @Autowired
+    private Map<String, RoomFactory> factories;
+
+    @PostMapping("/factory/{type}")
     public Room createRoomFactory(@PathVariable String type) {
-        Room newRoom = new Room();
-        // Logica Factory semplificata
-        newRoom.setTitle("Nuova Stanza " + type);
-        newRoom.setPricePerNight(100.00);
-        newRoom.setCapacity(2);
+        // Recupera la factory specifica in base al tipo di stanza che vogliamo creare
 
-        // Se vuoi rimettere lo switch completo con le immagini, puoi incollarlo qui dentro.
-        // Per ora lascio questo che funziona sicuro.
+        RoomFactory factory = factories.get(type.toUpperCase());
 
+        if (factory == null) {
+            throw new IllegalArgumentException("Errore: Tipo di stanza non valido -> " + type);
+        }
+
+        Room newRoom = factory.createRoom();
+
+        // Salviamo l'oggetto specifico
         return roomRepository.save(newRoom);
     }
 

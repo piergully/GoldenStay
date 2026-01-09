@@ -9,7 +9,6 @@ public class StandardRoom extends Room {
 
     public StandardRoom() {
         super();
-        //mettiamo i valori di default
         this.setTitle("Camera Standard");
         this.setPricePerNight(80.00);
         this.setCapacity(2);

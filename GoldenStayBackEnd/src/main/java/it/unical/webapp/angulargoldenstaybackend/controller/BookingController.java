@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookings")
-@CrossOrigin(origins = "http://localhost:4200") // Abilita Angular
+@CrossOrigin(origins = "http://localhost:4200")
 public class BookingController {
 
     @Autowired

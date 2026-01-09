@@ -33,7 +33,7 @@ public class UserController {
         User user = userRepository.findByEmailAndPassword(loginData.getEmail(), loginData.getPassword()).orElse(null);
 
         if (user != null) {
-            return ResponseEntity.ok(user); // Login OK: restituisce l'utente
+            return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.status(401).body("Credenziali errate"); // Errore
         }
