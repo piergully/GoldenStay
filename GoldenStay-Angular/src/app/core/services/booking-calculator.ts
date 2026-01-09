@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-// Assicurati che il percorso importi il file strategies.ts creato prima
 import { PricingStrategy, StandardPricingStrategy, LongStayDiscountStrategy, WeekendStrategy } from '../strategies/price.strategy';
 
 @Injectable({
@@ -7,9 +6,7 @@ import { PricingStrategy, StandardPricingStrategy, LongStayDiscountStrategy, Wee
 })
 export class BookingCalculator {
 
-  /**
-   * Esegue il calcolo delegando alla strategia passata.
-   */
+
   public calculateTotal(strategy: PricingStrategy, pricePerNight: number, checkIn: string, checkOut: string): number {
     const nights = this.getNights(checkIn, checkOut);
     if (nights <= 0) return 0;
@@ -19,7 +16,7 @@ export class BookingCalculator {
   // --- LOGICA DI SCELTA (FACTORY) ---
 
   /**
-   * Decide la strategia migliore.
+   * Strategia migliore.
    * Ordine di priorità:
    * 1. Sconto Lungo Soggiorno (vince su tutto)
    * 2. Maggiorazione Weekend (solo se non è lungo soggiorno)
@@ -30,7 +27,7 @@ export class BookingCalculator {
     const end = new Date(checkOut);
     const nights = this.getNights(checkIn, checkOut);
 
-    // 1. PRIORITÀ AL CLIENTE: Prima verifichiamo se merita lo sconto
+    // 1. Verifichiamo se si può applicare lo sconto
     if (nights > 7) {
       return new LongStayDiscountStrategy();
     }

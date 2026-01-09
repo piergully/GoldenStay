@@ -119,11 +119,18 @@ export class HeroSearchComponent {
   }
 
   onSearch() {
-    // ULTERIORE SICUREZZA
+    // 1. Controllo di sicurezza date
     if (this.checkIn >= this.checkOut) {
       alert('La data di Check-out deve essere successiva al Check-in!');
       return;
     }
+
+    // 2. Aggiorniamo i criteri (per il filtro ospiti lato client)
     this.roomService.updateSearch(this.guests, this.checkIn, this.checkOut);
+
+    // 3. FONDAMENTALE: Chiamiamo il Backend per filtrare le date!
+    // Questo attiva la chiamata GET /api/rooms?checkIn=...&checkOut=...
+    console.log('Chiamo il backend con:', this.checkIn, this.checkOut);
+    this.roomService.loadRooms(this.checkIn, this.checkOut);
   }
 }

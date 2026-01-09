@@ -12,7 +12,7 @@ public class Room {
 
     private String title;
 
-    @Column(length = 1000) // Descrizione lunga
+    @Column(length = 1000)
     private String description;
 
     private double pricePerNight;
@@ -31,7 +31,7 @@ public class Room {
         this.capacity = capacity;
     }
 
-    // GETTERS E SETTERS (Generali con Alt+Insert su IntelliJ)
+    // GETTERS E SETTERS
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getTitle() { return title; }

@@ -7,7 +7,7 @@ import { RoomService } from '../../../core/services/room.service';
   selector: 'app-create-room',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './create-room.html', // Assicurati che questo nome corrisponda al tuo file HTML
+  templateUrl: './create-room.html',
   styles: [`
     .factory-container {
       max-width: 1200px;

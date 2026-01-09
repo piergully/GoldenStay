@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    // Trova tutte le prenotazioni di un certo utente (utile per la cronologia utente)
+    // Trova tutte le prenotazioni di un certo utente
     List<Booking> findByUserId(Long userId);
 
-    // Trova tutte le prenotazioni di una certa stanza (utile per verificare disponibilità)
+    // Trova tutte le prenotazioni di una certa stanza
     List<Booking> findByRoomId(Long roomId);
 }

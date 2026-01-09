@@ -11,6 +11,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Restituisce Optional per gestire il caso in cui l'utente non esista
     Optional<User> findByEmailAndPassword(String email, String password);
 
-    // Modificato per restituire Optional<User> così puoi usare .isEmpty() nel DBLoader
     Optional<User> findByEmail(String email);
 }

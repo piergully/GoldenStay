@@ -4,7 +4,6 @@ import { PricingStrategy } from './price.strategy';
 export class BookingContext {
   private strategy: PricingStrategy;
 
-  // Accetta una qualsiasi classe che rispetti l'interfaccia PricingStrategy
   constructor(initialStrategy: PricingStrategy) {
     this.strategy = initialStrategy;
   }

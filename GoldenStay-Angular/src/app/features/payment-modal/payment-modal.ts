@@ -8,7 +8,7 @@ import { Room } from '../../core/models/room.model';
 
 // Services
 import { BookingService } from '../../core/services/booking';
-import { AuthService } from '../../core/services/auth'; // Assicurati che il percorso sia corretto
+import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-payment-modal',
@@ -43,7 +43,6 @@ export class PaymentModal {
   cardExpiry = '';
   cardCvv = '';
 
-  // --- FORMATTAZIONE INPUT (Cosmetica) ---
 
   formatCardNumber(event: any) {
     let input = event.target.value.replace(/\D/g, '');
@@ -84,7 +83,6 @@ export class PaymentModal {
 
     this.step = 'loading';
 
-    // 3. Creiamo l'oggetto JSON con i nomi ESATTI che si aspetta Java (BookingRequest.java)
     const datiPerJava = {
       userId: currentUser.id,    // <--- ORA USIAMO L'ID VERO!
       roomId: this.room?.id,     // ID della stanza

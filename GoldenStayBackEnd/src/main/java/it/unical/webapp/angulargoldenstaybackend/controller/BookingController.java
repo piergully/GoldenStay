@@ -27,7 +27,7 @@ public class BookingController {
     @Autowired
     private RoomRepository roomRepository;
 
-    // 1. CREA PRENOTAZIONE (chiamato dopo il pagamento)
+    // 1. CREA PRENOTAZIONE
     @PostMapping("/salva")
     public ResponseEntity<?> createBooking(@RequestBody BookingRequest request) {
 
@@ -53,13 +53,13 @@ public class BookingController {
         return ResponseEntity.ok(savedBooking);
     }
 
-    // 2. LISTA DI TUTTE LE PRENOTAZIONI (Per l'Admin Dashboard)
+    // 2. LISTA DI TUTTE LE PRENOTAZIONI (Admin)
     @GetMapping("/all")
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
 
-    // 3. CANCELLA UNA PRENOTAZIONE (Per l'Admin)
+    // 3. CANCELLA UNA PRENOTAZIONE (Admin)
 
     @DeleteMapping("/cancel/{id}")
     public ResponseEntity<?> cancelBooking(@PathVariable Long id) {

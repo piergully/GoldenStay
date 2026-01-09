@@ -14,7 +14,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    // 1. REGISTRAZIONE (POST)
+    // 1. REGISTRAZIONE
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
         // Controlla se l'email esiste già
@@ -26,7 +26,7 @@ public class UserController {
         return ResponseEntity.ok(savedUser);
     }
 
-    // 2. LOGIN (POST)
+    // 2. LOGIN
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginData) {
         // Cerca l'utente con email e password

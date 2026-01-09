@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { RoomService } from '../../core/services/room.service';
-// 1. IMPORTIAMO IL MODALE (Non serve più il BookingService qui, perché lo usa il modale!)
+// 1. IMPORTIAMO IL MODALE
 import { PaymentModal } from '../payment-modal/payment-modal'; // Controlla il percorso file
 
 @Component({
@@ -73,7 +73,6 @@ import { PaymentModal } from '../payment-modal/payment-modal'; // Controlla il p
     }
   `,
   styles: [`
-    /* ... (i tuoi stili rimangono uguali) ... */
     .booking-card { background: white; padding: 25px; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: sticky; top: 20px; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     h3 { margin: 0; color: #2c3e50; font-size: 1.2rem; }
@@ -101,7 +100,7 @@ export class BookingForm implements OnInit {
   // Variabile per mostrare/nascondere il modale
   showPaymentModal = false;
 
-  // Variabile per tenere traccia della stanza attuale (se ti serve per il prezzo)
+  // Variabile per tenere traccia della stanza attuale
   currentRoom: any = { title: 'Golden Suite', price: 150 }; // Esempio
 
   bookingForm: FormGroup = this.fb.group({
@@ -121,10 +120,9 @@ export class BookingForm implements OnInit {
     });
   }
 
-  // Funzione semplice per calcolare il prezzo (puoi migliorarla dopo)
+  // Funzione semplice per calcolare il prezzo
   calcolaPrezzo(): number {
-    // Qui dovresti fare: (dataPartenza - dataArrivo) * prezzoStanza
-    return 350.00; // Valore finto per ora, giusto per testare
+    return 350.00;
   }
 
   onSubmit() {

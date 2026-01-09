@@ -13,7 +13,6 @@ public class DBLoader implements CommandLineRunner {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
 
-    // CORREZIONE: Aggiunto userRepository al costruttore per la Dependency Injection
     public DBLoader(RoomRepository roomRepository, UserRepository userRepository) {
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
@@ -32,17 +31,15 @@ public class DBLoader implements CommandLineRunner {
             System.out.println("✅ Stanze inserite nel Database!");
         }
 
-        // 2. Inserimento Admin (Spostato fuori dall'if delle stanze per sicurezza)
+        // 2. Inserimento Admin
         String adminEmail = "admin@goldenstay.it";
 
-        // Grazie a Optional nel Repository, ora .isEmpty() funziona correttamente
         if (userRepository.findByEmail(adminEmail).isEmpty()) {
 
             User admin = new User();
             admin.setEmail(adminEmail);
             admin.setName("Amministratore");
 
-            // NOTA: Ricordati di usare BCryptPasswordEncoder in futuro!
             admin.setPassword("admin123");
 
             admin.setRole("ADMIN");

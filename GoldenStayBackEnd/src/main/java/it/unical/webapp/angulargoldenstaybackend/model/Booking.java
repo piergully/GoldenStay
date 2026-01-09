@@ -11,7 +11,6 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Le date vengono gestite come LocalDate (Spring le converte da "YYYY-MM-DD")
     private LocalDate checkIn;
     private LocalDate checkOut;
 
@@ -20,7 +19,6 @@ public class Booking {
     // Esempio valori: "CONFERMATA", "CANCELLATA", "IN ATTESA"
     private String status;
 
-    // --- RELAZIONI ---
 
     // Molte prenotazioni appartengono a un Utente
     @ManyToOne
@@ -32,7 +30,7 @@ public class Booking {
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
-    // Costruttore vuoto (obbligatorio per JPA)
+    // Costruttore vuoto
     public Booking() {}
 
     // Costruttore pieno

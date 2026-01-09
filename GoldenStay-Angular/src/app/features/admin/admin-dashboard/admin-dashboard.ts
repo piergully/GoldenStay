@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // <--- FONDAMENTALE PER I FORM
+import { FormsModule } from '@angular/forms';
 import { RoomService } from '../../../core/services/room.service';
-import { Room } from '../../../core/models/room.model'; // Assicurati di avere il modello, altrimenti usa 'any'
+import { Room } from '../../../core/models/room.model';
 
 @Component({
   selector: 'app-admin-dashboard',

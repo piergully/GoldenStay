@@ -11,6 +11,6 @@ export const authGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  // Altrimenti, accompagnalo gentilmente alla porta d'ingresso (Login)
+  // Altrimenti, LOGIN
   return router.createUrlTree(['/login']);
 };

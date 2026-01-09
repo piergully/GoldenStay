@@ -12,7 +12,7 @@ public class User {
 
     private String name;
 
-    @Column(unique = true) // L'email non può essere doppia
+    @Column(unique = true)
     private String email;
 
     private String password;

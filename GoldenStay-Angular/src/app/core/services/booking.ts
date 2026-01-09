@@ -3,16 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
-// 1. CORREZIONE INTERFACCIA
-// Deve rispecchiare ESATTAMENTE il JSON che arriva da Java (Entity Booking.java)
 export interface Booking {
   id: number;
-  checkIn: string;       // Java manda "checkIn", non "dataArrivo"
-  checkOut: string;      // Java manda "checkOut"
-  totalPrice: number;    // Java manda "totalPrice"
+  checkIn: string;
+  checkOut: string;
+  totalPrice: number;
   status: string;
 
-  // Java manda l'oggetto intero, non solo il nome!
   user: {
     name: string;
     email: string;

@@ -8,7 +8,6 @@ import { Footer } from './layout/footer/footer';
   standalone: true,
 
   imports: [RouterOutlet, Navbar, Footer],
-  // Definiamo il template direttamente qui o nel file HTML collegato
   template: `
     <div class="app-layout">
       <app-navbar></app-navbar> <main class="content">
@@ -17,6 +16,6 @@ import { Footer } from './layout/footer/footer';
 
       <app-footer></app-footer> </div>
   `,
-  styleUrls: ['./app.css'] // O styles: [] se non usi il file css esterno
+  styleUrls: ['./app.css']
 })
 export class App {}

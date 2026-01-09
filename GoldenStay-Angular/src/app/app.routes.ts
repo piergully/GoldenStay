@@ -1,9 +1,7 @@
 import { Routes } from '@angular/router';
-// Assicurati che il percorso del guard sia corretto (usa il trucco CTRL+SPAZIO se serve)
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
-  //QUESTA è la parte pubblica
 
   // Home Page con la lista stanze
   {

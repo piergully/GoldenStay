@@ -9,7 +9,7 @@ export interface User {
   email: string;
   password?: string;
   role?: string;
-  token?: string; // Aggiungo questo perché con la sicurezza spesso arriva un token
+  token?: string;
 }
 
 @Injectable({
@@ -19,7 +19,6 @@ export class AuthService {
   private router = inject(Router);
   private http = inject(HttpClient);
 
-  // Assicurati che la porta sia quella giusta (8080 o quella che usa il tuo collega)
   private apiUrl = 'http://localhost:8080/api/users';
 
   currentUser = signal<User | null>(null);
@@ -27,7 +26,7 @@ export class AuthService {
   redirectUrl: string | null = null;
 
   constructor() {
-    // 1. AL RITMO DI AVVIO: Controlliamo se c'è un utente salvato nella "tasca" del browser
+    // 1. ALL'AVVIO: Controlliamo se c'è un utente salvato nel browser
     const utenteSalvato = localStorage.getItem('utente_loggato');
     if (utenteSalvato) {
       this.currentUser.set(JSON.parse(utenteSalvato));
@@ -79,7 +78,6 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  // Questa proprietà ora funzionerà anche dopo il refresh (F5)
   get isLoggedIn() {
     return !!this.currentUser();
   }

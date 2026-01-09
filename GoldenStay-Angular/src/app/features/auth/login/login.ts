@@ -63,7 +63,6 @@ export class Login {
       this.authService.login(this.email, this.password).subscribe({
 
         next: (utenteRicevuto: any) => {
-          // DEBUG: Vediamo cosa arriva
           console.log("DATI UTENTE:", utenteRicevuto);
 
           // Controllo sicuro del ruolo

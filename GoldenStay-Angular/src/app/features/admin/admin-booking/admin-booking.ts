@@ -7,7 +7,7 @@ import { Router, RouterLink } from '@angular/router';
   selector: 'app-admin-bookings',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  providers: [BookingService], // Sblocca l'errore NG0201
+  providers: [BookingService],
   templateUrl: './admin-booking.html',
   styles: [`
     .container { max-width: 1200px; margin: 40px auto; padding: 20px; }

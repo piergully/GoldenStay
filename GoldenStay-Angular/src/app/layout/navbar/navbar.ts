@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router, NavigationEnd } from '@angular/router'; // Aggiunti Router e NavigationEnd
+import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 
 @Component({
