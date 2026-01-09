@@ -1,0 +1,19 @@
+package it.unical.webapp.angulargoldenstaybackend.model;
+
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+
+@Entity
+@DiscriminatorValue("STANDARD")
+public class StandardRoom extends Room {
+
+    public StandardRoom() {
+        super();
+        //mettiamo i valori di default
+        this.setTitle("Camera Standard");
+        this.setPricePerNight(80.00);
+        this.setCapacity(2);
+        this.setImageUrl("https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80");
+
+    }
+}
