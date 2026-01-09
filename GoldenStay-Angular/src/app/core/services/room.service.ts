@@ -63,7 +63,7 @@ export class RoomService {
   }
 
   createRoomByFactory(type: string) {
-    return this.http.post<Room>(`${this.apiUrl}/create/${type}`, {}).pipe(
+    return this.http.post<Room>(`${this.apiUrl}/factory/${type}`, {}).pipe(
       tap(() => this.loadRooms())
     );
   }
